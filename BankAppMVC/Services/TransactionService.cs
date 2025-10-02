@@ -9,14 +9,28 @@ namespace BankAppMVC.Services
     {
         private readonly string apiBaseUrl = "https://localhost:7276/api/Transactions";
 
+
+        public async Task<List<TransactionModel>> GetTransactionsByUserId(int userId)
+        {
+            var client = new RestClient($"{apiBaseUrl}/ByUser/{userId}");
+            var request = new RestRequest { Method = Method.Get };
+            var response = await client.ExecuteAsync<List<TransactionModel>>(request);
+            return response.Data ?? new List<TransactionModel>();
+        }
+
         public async Task<List<TransactionModel>> GetTransactions()
         {
             var client = new RestClient(apiBaseUrl);
-            var request = new RestRequest();
-            request.Method = Method.Get;
+            var request = new RestRequest { Method = Method.Get };
             var response = await client.ExecuteAsync<List<TransactionModel>>(request);
-            return response.Data;
+            return response.Data ?? new List<TransactionModel>();
         }
+
+
+
+
+
+        
 
         public async Task<TransactionModel> GetTransaction(int id)
         {

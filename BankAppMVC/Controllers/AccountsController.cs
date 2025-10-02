@@ -8,10 +8,44 @@ namespace BankAppMVC.Controllers
     public class AccountsController : Controller
     {
         private readonly AccountService _accountService;
+        private readonly UserService _userService;
 
-        public AccountsController()
+        public AccountsController(UserService userService,AccountService accountService)
         {
-            _accountService = new AccountService();
+            _accountService = accountService;
+            _userService = userService;
+        }
+
+        // GET: /Account/Login
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        // POST: /Account/Login
+        [HttpPost]
+        public async Task<IActionResult> Login(string email, string password)
+        {
+            var users = await _userService.GetUsers();
+            var user = users.FirstOrDefault(u => u.Email == email && password == "pass123"); // temp: match default password
+
+            if (user != null)
+            {
+                // Store user id in session for dashboard
+                HttpContext.Session.SetInt32("UserId", user.UserId);
+                return RedirectToAction("UserDashboard", "Home");
+            }
+
+            ViewBag.Error = "Invalid email or password";
+            return View();
+        }
+
+        // GET: /Account/Logout
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Remove("UserId");
+            return RedirectToAction("Login");
         }
 
         // GET: /Accounts
@@ -70,6 +104,9 @@ namespace BankAppMVC.Controllers
             if (account == null) return NotFound();
             return View(account);
         }
+      
+
+       
 
         // POST: /Accounts/Delete/5
         [HttpPost, ActionName("Delete")]

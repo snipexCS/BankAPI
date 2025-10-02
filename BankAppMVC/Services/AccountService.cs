@@ -9,14 +9,22 @@ namespace BankAppMVC.Services
     {
         private readonly string apiBaseUrl = "https://localhost:7276/api/Accounts";
 
+
         public async Task<List<AccountModel>> GetAccounts()
         {
             var client = new RestClient(apiBaseUrl);
-            var request = new RestRequest();
-            request.Method = Method.Get;
+            var request = new RestRequest { Method = Method.Get };
             var response = await client.ExecuteAsync<List<AccountModel>>(request);
-            return response.Data;
+            return response.Data ?? new List<AccountModel>();
         }
+
+        public async Task<List<AccountModel>> GetAccountsByUserId(int userId)
+        {
+            var allAccounts = await GetAccounts();
+            return allAccounts.Where(a => a.UserId == userId).ToList();
+        }
+
+        
 
         public async Task<AccountModel> GetAccount(int id)
         {

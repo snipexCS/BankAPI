@@ -18,5 +18,7 @@ namespace BankAPI.Models
         public decimal Amount { get; set; }
 
         public DateTime Date { get; set; }
+        public int UserId { get; set; }  // link transaction to the user
+
     }
 }

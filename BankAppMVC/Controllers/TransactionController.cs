@@ -15,11 +15,17 @@ namespace BankAppMVC.Controllers
         }
 
         // GET: /Transactions
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? userId)
         {
-            var transactions = await _transactionService.GetTransactions();
+            List<TransactionModel> transactions;
+            if (userId.HasValue)
+                transactions = await _transactionService.GetTransactionsByUserId(userId.Value);
+            else
+                transactions = await _transactionService.GetTransactions(); // all transactions
+
             return View(transactions);
         }
+
 
         // GET: /Transactions/Details/5
         public async Task<IActionResult> Details(int id)

@@ -7,7 +7,8 @@ namespace BankAppMVC.Services
 {
     public class UserService
     {
-        private readonly string apiBaseUrl = "https://localhost:7276/api/Users";
+        private readonly string apiBaseUrl = "https://localhost:7276/api/UserProfiles";
+  
 
         public async Task<List<UserModel>> GetUsers()
         {
@@ -15,17 +16,21 @@ namespace BankAppMVC.Services
             var request = new RestRequest();
             request.Method = Method.Get;
             var response = await client.ExecuteAsync<List<UserModel>>(request);
-            return response.Data;
+            return response.Data ?? new List<UserModel>();
         }
 
         public async Task<UserModel> GetUser(int id)
         {
             var client = new RestClient($"{apiBaseUrl}/{id}");
-            var request = new RestRequest();
-            request.Method = Method.Get;
+            var request = new RestRequest("", Method.Get);
             var response = await client.ExecuteAsync<UserModel>(request);
             return response.Data;
         }
+
+
+
+
+
 
         public async Task<UserModel> CreateUser(UserModel user)
         {
