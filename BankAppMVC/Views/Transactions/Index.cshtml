@@ -1,0 +1,35 @@
+﻿@model IEnumerable<BankAppMVC.Models.TransactionModel>
+
+<h2>Transactions</h2>
+<a href="@Url.Action("Create")" class="btn btn-primary">New Transaction</a>
+<table class="table mt-2">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Account Number</th>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Description</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var tx in Model)
+        {
+            <tr>
+                <td>@tx.TransactionId</td>
+                <td>@tx.AccountNumber</td>
+                <td>@tx.Date</td>
+                <td>@tx.Type</td>
+                <td>@tx.Amount</td>
+                <td>@tx.Description</td>
+                <td>
+                    <a href="@Url.Action("Details", new { id = tx.TransactionId })">Details</a> |
+                    <a href="@Url.Action("Edit", new { id = tx.TransactionId })">Edit</a> |
+                    <a href="@Url.Action("Delete", new { id = tx.TransactionId })">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
