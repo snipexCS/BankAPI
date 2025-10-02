@@ -5,7 +5,12 @@ public static class DataSeeder
 {
     public static void SeedRandomData(ModelBuilder modelBuilder)
     {
-        var names = new string[] { "Fang Yuan", "Red Fog", "Black Evil", "Liu Chen", "Shen Wei" };
+        var names = new string[]
+{
+    "Fang Yuan", "Red Fog", "Black Evil", "Liu Chen", "Shen Wei",
+    "Rengoku", "Wu Sheng", "Daoist", "Master Chen", "Zhu Rong",
+    "Li Mu", "Yan Shi" 
+};
         int userId = 1;
         int accountNumber = 1001;
         int transactionId = 1;
