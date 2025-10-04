@@ -49,37 +49,31 @@ namespace BankAPI.Controllers
 
             return userProfile;
         }
-
-        // PUT: api/UserProfiles/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUserProfile(int id, UserProfile userProfile)
         {
             if (id != userProfile.UserId)
-            {
-                return BadRequest();
-            }
+                return BadRequest("User ID mismatch");
 
-            _context.Entry(userProfile).State = EntityState.Modified;
+            var existingUser = await _context.Users.FindAsync(id);
+            if (existingUser == null) return NotFound();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserProfileExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            // Update allowed fields
+            existingUser.Name = userProfile.Name;
+            existingUser.Email = userProfile.Email;
+            existingUser.Phone = userProfile.Phone;
+            // Add other fields as necessary
+
+            _context.Entry(existingUser).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
+
+
+        // PUT: api/UserProfiles/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        
 
         // POST: api/UserProfiles
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

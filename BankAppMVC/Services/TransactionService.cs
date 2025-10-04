@@ -9,15 +9,7 @@ namespace BankAppMVC.Services
     {
         private readonly string apiBaseUrl = "https://localhost:7276/api/Transactions";
 
-
-        public async Task<List<TransactionModel>> GetTransactionsByUserId(int userId)
-        {
-            var client = new RestClient($"{apiBaseUrl}/ByUser/{userId}");
-            var request = new RestRequest { Method = Method.Get };
-            var response = await client.ExecuteAsync<List<TransactionModel>>(request);
-            return response.Data ?? new List<TransactionModel>();
-        }
-
+        // Get all transactions
         public async Task<List<TransactionModel>> GetTransactions()
         {
             var client = new RestClient(apiBaseUrl);
@@ -26,12 +18,16 @@ namespace BankAppMVC.Services
             return response.Data ?? new List<TransactionModel>();
         }
 
+        // Get transactions by account number
+        public async Task<List<TransactionModel>> GetTransactionsByAccountNumber(int accountNumber)
+        {
+            var client = new RestClient($"{apiBaseUrl}/ByAccount/{accountNumber}");
+            var request = new RestRequest { Method = Method.Get };
+            var response = await client.ExecuteAsync<List<TransactionModel>>(request);
+            return response.Data ?? new List<TransactionModel>();
+        }
 
-
-
-
-        
-
+        // Get single transaction
         public async Task<TransactionModel> GetTransaction(int id)
         {
             var client = new RestClient($"{apiBaseUrl}/{id}");
@@ -41,6 +37,7 @@ namespace BankAppMVC.Services
             return response.Data;
         }
 
+        // Create transaction
         public async Task<TransactionModel> CreateTransaction(TransactionModel transaction)
         {
             var client = new RestClient(apiBaseUrl);
@@ -51,6 +48,7 @@ namespace BankAppMVC.Services
             return response.Data;
         }
 
+        // Update transaction
         public async Task<TransactionModel> UpdateTransaction(int id, TransactionModel transaction)
         {
             var client = new RestClient($"{apiBaseUrl}/{id}");
@@ -61,6 +59,7 @@ namespace BankAppMVC.Services
             return response.Data;
         }
 
+        // Delete transaction
         public async Task<bool> DeleteTransaction(int id)
         {
             var client = new RestClient($"{apiBaseUrl}/{id}");
@@ -69,5 +68,32 @@ namespace BankAppMVC.Services
             var response = await client.ExecuteAsync(request);
             return response.IsSuccessful;
         }
+        public async Task<TransactionModel> TransferMoney(MoneyTransferModel transfer)
+        {
+            // First, create withdrawal from FromAccount
+            var withdrawal = new TransactionModel
+            {
+                AccountNumber = transfer.FromAccountNumber,
+                Amount = transfer.Amount,
+                Type = "Withdrawal",
+                Description = transfer.Description,
+                Date = DateTime.Now
+            };
+            await CreateTransaction(withdrawal);
+
+            // Then, create deposit to ToAccount
+            var deposit = new TransactionModel
+            {
+                AccountNumber = transfer.ToAccountNumber,
+                Amount = transfer.Amount,
+                Type = "Deposit",
+                Description = transfer.Description,
+                Date = DateTime.Now
+            };
+            await CreateTransaction(deposit);
+
+            return deposit;
+        }
+
     }
 }
