@@ -1,0 +1,30 @@
+﻿@model BankWebAppMVC.Models.TransferViewModel
+
+<h2>Transfer Money</h2>
+
+<form asp-action="TransferMoney" method="post">
+    <div>
+        <label>From Account</label>
+        <input asp-for="FromAccount" />
+    </div>
+    <div>
+        <label>To Account</label>
+        <input asp-for="ToAccount" />
+    </div>
+    <div>
+        <label>Amount</label>
+        <input asp-for="Amount" />
+    </div>
+    <div>
+        <label>Description</label>
+        <input asp-for="Description" />
+    </div>
+    <button type="submit">Transfer</button>
+</form>
+
+@if (ViewBag.Message != null)
+{
+    <p>@ViewBag.Message</p>
+}
+
+@section Scripts { }

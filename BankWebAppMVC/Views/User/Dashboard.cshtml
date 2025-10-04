@@ -1,0 +1,112 @@
+﻿@model BankWebAppMVC.Models.UserProfile
+@using BankWebAppMVC.Models
+@{
+    ViewData["Title"] = "Dashboard";
+    var accounts = ViewBag.Accounts as List<Account>;
+    var transactions = ViewBag.Transactions as List<Transactions>;
+}
+
+<div class="container mt-4">
+    <h2>Welcome, @Model.Name</h2>
+
+    <!-- Success/Error Messages -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success" id="success-message">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger" id="error-message">@TempData["Error"]</div>
+    }
+
+    <!-- Profile Section -->
+    <div class="card mb-4">
+        <div class="card-body d-flex align-items-center">
+            <img src="@Model.Picture ?? " /images/default-profile.png"" alt="Profile" class="rounded-circle me-3" width="80" height="80" />
+            <div>
+                <p class="mb-1"><strong>Email:</strong> @Model.Email</p>
+                <p class="mb-1"><strong>Phone:</strong> @Model.Phone ?? "N/A"</p>
+                <p class="mb-0"><strong>Address:</strong> @Model.Address ?? "N/A"</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accounts & Transactions Tabs -->
+    <ul class="nav nav-tabs mb-3" id="accountTabs" role="tablist">
+        @for (int i = 0; i < accounts.Count; i++)
+        {
+            <li class="nav-item" role="presentation">
+                <button class="nav-link @(i == 0 ? "active" : "")" id="account-@i-tab" data-bs-toggle="tab" data-bs-target="#account-@i" type="button" role="tab">
+                    Account @accounts[i].AccountNumber
+                </button>
+            </li>
+        }
+    </ul>
+
+    <div class="tab-content" id="accountTabsContent">
+        @for (int i = 0; i < accounts.Count; i++)
+        {
+            var account = accounts[i];
+            <div class="tab-pane fade @(i == 0 ? "show active" : "")" id="account-@i" role="tabpanel">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <p><strong>Account Type:</strong> @account.AccountType</p>
+                        <p><strong>Balance:</strong> $@account.Balance.ToString("N2")</p>
+                        <a class="btn btn-primary" data-bs-toggle="collapse" href="#transferForm-@i" role="button">Transfer Money</a>
+                    </div>
+                </div>
+
+                <!-- Transfer Form -->
+                <div class="collapse mb-3" id="transferForm-@i">
+                    <div class="card card-body">
+                        <form asp-action="Transfer" method="post">
+                            <input type="hidden" name="fromAccount" value="@account.AccountNumber" />
+                            <div class="mb-3">
+                                <label for="toAccount" class="form-label">To Account</label>
+                                <input type="number" name="toAccount" class="form-control" required />
+                            </div>
+                            <div class="mb-3">
+                                <label for="amount" class="form-label">Amount</label>
+                                <input type="number" name="amount" class="form-control" min="1" step="0.01" required />
+                            </div>
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <input type="text" name="description" class="form-control" />
+                            </div>
+                            <button type="submit" class="btn btn-success">Send</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Transaction History -->
+                <h5>Recent Transactions</h5>
+                <table class="table table-striped table-bordered table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th>Amount ($)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var t in transactions.Where(x => x.AccountNumber == account.AccountNumber).OrderByDescending(x => x.Date).Take(10))
+                        {
+                            <tr>
+                                <td>@t.Date.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@t.TransactionType</td>
+                                <td>@t.Description</td>
+                                <td class="@(t.TransactionType == "Withdrawal" ? "text-danger" : "text-success")">@t.Amount.ToString("N2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js"></script>
+}

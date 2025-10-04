@@ -6,11 +6,12 @@ public static class DataSeeder
     public static void SeedRandomData(ModelBuilder modelBuilder)
     {
         var names = new string[]
-{
-    "Fang Yuan", "Red Fog", "Black Evil", "Liu Chen", "Shen Wei",
-    "Rengoku", "Wu Sheng", "Daoist", "Master Chen", "Zhu Rong",
-    "Li Mu", "Yan Shi" 
-};
+        {
+            "Fang Yuan", "Red Fog", "Black Evil", "Liu Chen", "Shen Wei",
+            "Rengoku", "Wu Sheng", "Daoist", "Master Chen", "Zhu Rong",
+            "Li Mu", "Yan Shi"
+        };
+
         int userId = 1;
         int accountNumber = 1001;
         int transactionId = 1;
@@ -29,7 +30,8 @@ public static class DataSeeder
                 Phone = "0123456789",
                 Address = "Random Street",
                 Password = "pass123",
-                Picture = ""
+                Picture = "",
+                IsAdmin = userId == 1 // <-- Make the first user admin
             });
 
             accounts.Add(new Account
@@ -46,7 +48,9 @@ public static class DataSeeder
                 AccountNumber = accountNumber,
                 TransactionType = "Deposit",
                 Amount = 5000 + userId * 1000,
-                Date = DateTime.Now
+                Date = DateTime.Now,
+                UserId = userId,
+                Description = "Initial deposit"
             });
 
             userId++;

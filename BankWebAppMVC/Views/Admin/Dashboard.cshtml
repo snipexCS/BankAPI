@@ -1,0 +1,81 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+    var users = ViewBag.Users as List<BankWebAppMVC.Models.UserProfile>;
+    var accounts = ViewBag.Accounts as List<BankWebAppMVC.Models.Account>;
+    var transactions = ViewBag.Transactions as List<BankWebAppMVC.Models.Transactions>;
+}
+
+<h2>Admin Dashboard</h2>
+
+<h3>Users</h3>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Admin?</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var u in users)
+        {
+            <tr>
+                <td>@u.UserId</td>
+                <td>@u.Name</td>
+                <td>@u.Email</td>
+                <td>@(u.IsAdmin ? "Yes" : "No")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h3>Accounts</h3>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Account Number</th>
+            <th>User ID</th>
+            <th>Type</th>
+            <th>Balance</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var acc in accounts)
+        {
+            <tr>
+                <td>@acc.AccountNumber</td>
+                <td>@acc.UserId</td>
+                <td>@acc.AccountType</td>
+                <td>@acc.Balance</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h3>Recent Transactions</h3>
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Account</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var t in transactions)
+        {
+            <tr>
+                <td>@t.TransactionId</td>
+                <td>@t.AccountNumber</td>
+                <td>@t.TransactionType</td>
+                <td>@t.Amount</td>
+                <td>@t.Date.ToString("g")</td>
+                <td>@t.Description</td>
+            </tr>
+        }
+    </tbody>
+</table>

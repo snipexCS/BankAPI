@@ -3,6 +3,7 @@ using System;
 using BankAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BankAPI.Migrations
 {
     [DbContext(typeof(DBManager))]
-    partial class DBManagerModelSnapshot : ModelSnapshot
+    [Migration("20251004074108_nice")]
+    partial class nice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.10");
@@ -336,7 +339,7 @@ namespace BankAPI.Migrations
                             TransactionId = 1,
                             AccountNumber = 1001,
                             Amount = 6000m,
-                            Date = new DateTime(2025, 10, 4, 15, 42, 48, 631, DateTimeKind.Local).AddTicks(4855),
+                            Date = new DateTime(2025, 10, 4, 15, 41, 8, 30, DateTimeKind.Local).AddTicks(9199),
                             Description = "Initial deposit",
                             TransactionType = "Deposit",
                             UserId = 1
@@ -346,7 +349,7 @@ namespace BankAPI.Migrations
                             TransactionId = 2,
                             AccountNumber = 1002,
                             Amount = 7000m,
-                            Date = new DateTime(2025, 10, 4, 15, 42, 48, 631, DateTimeKind.Local).AddTicks(4872),
+                            Date = new DateTime(2025, 10, 4, 15, 41, 8, 30, DateTimeKind.Local).AddTicks(9216),
                             Description = "Initial deposit",
                             TransactionType = "Deposit",
                             UserId = 2
@@ -356,7 +359,7 @@ namespace BankAPI.Migrations
                             TransactionId = 3,
                             AccountNumber = 1003,
                             Amount = 8000m,
-                            Date = new DateTime(2025, 10, 4, 15, 42, 48, 631, DateTimeKind.Local).AddTicks(4875),
+                            Date = new DateTime(2025, 10, 4, 15, 41, 8, 30, DateTimeKind.Local).AddTicks(9218),
                             Description = "Initial deposit",
                             TransactionType = "Deposit",
                             UserId = 3
@@ -366,7 +369,7 @@ namespace BankAPI.Migrations
                             TransactionId = 4,
                             AccountNumber = 1004,
                             Amount = 9000m,
-                            Date = new DateTime(2025, 10, 4, 15, 42, 48, 631, DateTimeKind.Local).AddTicks(4876),
+                            Date = new DateTime(2025, 10, 4, 15, 41, 8, 30, DateTimeKind.Local).AddTicks(9219),
                             Description = "Initial deposit",
                             TransactionType = "Deposit",
                             UserId = 4
@@ -376,7 +379,7 @@ namespace BankAPI.Migrations
                             TransactionId = 5,
                             AccountNumber = 1005,
                             Amount = 10000m,
-                            Date = new DateTime(2025, 10, 4, 15, 42, 48, 631, DateTimeKind.Local).AddTicks(4880),
+                            Date = new DateTime(2025, 10, 4, 15, 41, 8, 30, DateTimeKind.Local).AddTicks(9222),
                             Description = "Initial deposit",
                             TransactionType = "Deposit",
                             UserId = 5
@@ -386,7 +389,7 @@ namespace BankAPI.Migrations
                             TransactionId = 6,
                             AccountNumber = 1006,
                             Amount = 11000m,
-                            Date = new DateTime(2025, 10, 4, 15, 42, 48, 631, DateTimeKind.Local).AddTicks(4881),
+                            Date = new DateTime(2025, 10, 4, 15, 41, 8, 30, DateTimeKind.Local).AddTicks(9224),
                             Description = "Initial deposit",
                             TransactionType = "Deposit",
                             UserId = 6
@@ -396,7 +399,7 @@ namespace BankAPI.Migrations
                             TransactionId = 7,
                             AccountNumber = 1007,
                             Amount = 12000m,
-                            Date = new DateTime(2025, 10, 4, 15, 42, 48, 631, DateTimeKind.Local).AddTicks(4883),
+                            Date = new DateTime(2025, 10, 4, 15, 41, 8, 30, DateTimeKind.Local).AddTicks(9226),
                             Description = "Initial deposit",
                             TransactionType = "Deposit",
                             UserId = 7
@@ -406,7 +409,7 @@ namespace BankAPI.Migrations
                             TransactionId = 8,
                             AccountNumber = 1008,
                             Amount = 13000m,
-                            Date = new DateTime(2025, 10, 4, 15, 42, 48, 631, DateTimeKind.Local).AddTicks(4884),
+                            Date = new DateTime(2025, 10, 4, 15, 41, 8, 30, DateTimeKind.Local).AddTicks(9227),
                             Description = "Initial deposit",
                             TransactionType = "Deposit",
                             UserId = 8
@@ -416,7 +419,7 @@ namespace BankAPI.Migrations
                             TransactionId = 9,
                             AccountNumber = 1009,
                             Amount = 14000m,
-                            Date = new DateTime(2025, 10, 4, 15, 42, 48, 631, DateTimeKind.Local).AddTicks(4887),
+                            Date = new DateTime(2025, 10, 4, 15, 41, 8, 30, DateTimeKind.Local).AddTicks(9230),
                             Description = "Initial deposit",
                             TransactionType = "Deposit",
                             UserId = 9
@@ -426,7 +429,7 @@ namespace BankAPI.Migrations
                             TransactionId = 10,
                             AccountNumber = 1010,
                             Amount = 15000m,
-                            Date = new DateTime(2025, 10, 4, 15, 42, 48, 631, DateTimeKind.Local).AddTicks(4889),
+                            Date = new DateTime(2025, 10, 4, 15, 41, 8, 30, DateTimeKind.Local).AddTicks(9231),
                             Description = "Initial deposit",
                             TransactionType = "Deposit",
                             UserId = 10
@@ -436,7 +439,7 @@ namespace BankAPI.Migrations
                             TransactionId = 11,
                             AccountNumber = 1011,
                             Amount = 16000m,
-                            Date = new DateTime(2025, 10, 4, 15, 42, 48, 631, DateTimeKind.Local).AddTicks(4891),
+                            Date = new DateTime(2025, 10, 4, 15, 41, 8, 30, DateTimeKind.Local).AddTicks(9233),
                             Description = "Initial deposit",
                             TransactionType = "Deposit",
                             UserId = 11
@@ -446,7 +449,7 @@ namespace BankAPI.Migrations
                             TransactionId = 12,
                             AccountNumber = 1012,
                             Amount = 17000m,
-                            Date = new DateTime(2025, 10, 4, 15, 42, 48, 631, DateTimeKind.Local).AddTicks(4892),
+                            Date = new DateTime(2025, 10, 4, 15, 41, 8, 30, DateTimeKind.Local).AddTicks(9234),
                             Description = "Initial deposit",
                             TransactionType = "Deposit",
                             UserId = 12

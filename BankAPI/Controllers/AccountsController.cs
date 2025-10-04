@@ -13,26 +13,6 @@ public class AccountsController : ControllerBase
     {
         _context = context;
     }
-    [HttpPut("{id}")]
-    public async Task<IActionResult> PutAccount(int id, Account account)
-    {
-        if (id != account.AccountNumber)
-            return BadRequest("Account number mismatch");
-
-        var existingAccount = await _context.Accounts.FindAsync(id);
-        if (existingAccount == null) return NotFound();
-
-        // Update allowed fields
-        existingAccount.UserId = account.UserId;
-        existingAccount.AccountType = account.AccountType;
-        existingAccount.Balance = account.Balance;
-
-        _context.Entry(existingAccount).State = EntityState.Modified;
-        await _context.SaveChangesAsync();
-
-        return NoContent();
-    }
-
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Account>>> GetAccounts() =>
@@ -54,13 +34,30 @@ public class AccountsController : ControllerBase
         return CreatedAtAction(nameof(GetAccount), new { id = account.AccountNumber }, account);
     }
 
-   
+    [HttpPut("{id}")]
+    public async Task<IActionResult> PutAccount(int id, Account account)
+    {
+        if (id != account.AccountNumber) return BadRequest("Account number mismatch");
+
+        var existingAccount = await _context.Accounts.FindAsync(id);
+        if (existingAccount == null) return NotFound();
+
+        existingAccount.UserId = account.UserId;
+        existingAccount.AccountType = account.AccountType;
+        existingAccount.Balance = account.Balance;
+
+        _context.Entry(existingAccount).State = EntityState.Modified;
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteAccount(int id)
     {
         var account = await _context.Accounts.FindAsync(id);
         if (account == null) return NotFound();
+
         _context.Accounts.Remove(account);
         await _context.SaveChangesAsync();
         return NoContent();
