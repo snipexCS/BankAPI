@@ -17,25 +17,39 @@ namespace BankWebAppMVC.Controllers
         // Admin dashboard
         public async Task<IActionResult> Dashboard()
         {
-            var users = await _bankService.GetAllUsersAsync();
+            // Get all users
+            var users = await _bankService.GetAllUsersAsync() ?? new List<UserProfile>();
             var allAccounts = new List<Account>();
             var allTransactions = new List<Transactions>();
 
+            // Collect account + transaction data
             foreach (var user in users)
             {
-                var accounts = await _bankService.GetAccountsByUserIdAsync(user.UserId);
+                var accounts = await _bankService.GetAccountsByUserIdAsync(user.UserId) ?? new List<Account>();
                 allAccounts.AddRange(accounts);
 
                 foreach (var acc in accounts)
-                    allTransactions.AddRange(await _bankService.GetTransactionsByAccountAsync(acc.AccountNumber));
+                {
+                    var txns = await _bankService.GetTransactionsByAccountAsync(acc.AccountNumber) ?? new List<Transactions>();
+                    allTransactions.AddRange(txns);
+                }
             }
 
+            // Identify the currently logged-in admin
+            var currentAdminEmail = HttpContext.Session.GetString("UserEmail");
+            var currentAdmin = users.FirstOrDefault(u => u.Email == currentAdminEmail);
+
+            // Pass all to ViewBag
             ViewBag.Users = users;
             ViewBag.Accounts = allAccounts;
             ViewBag.Transactions = allTransactions.OrderByDescending(t => t.Date).ToList();
+            ViewBag.CurrentAdmin = currentAdmin;
 
-            return View(); // No model, use ViewBag in the Razor page
+            return View();
         }
+
+
+
 
         public IActionResult Create() => View();
 

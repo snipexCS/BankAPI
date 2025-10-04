@@ -12,6 +12,13 @@ public static class DataSeeder
             "Li Mu", "Yan Shi"
         };
 
+        var pictureFiles = new string[]
+        {
+            "user1.jpg", "user2.jpg", "user3.jpg", "user4.jpg",
+            "user5.jpg", "user6.jpg", "user7.jpg", "user8.jpg",
+            "user9.jpg", "user10.jpg", "user11.jpg", "user12.jpg"
+        };
+
         int userId = 1;
         int accountNumber = 1001;
         int transactionId = 1;
@@ -30,8 +37,8 @@ public static class DataSeeder
                 Phone = "0123456789",
                 Address = "Random Street",
                 Password = "pass123",
-                Picture = "",
-                IsAdmin = userId == 1 // <-- Make the first user admin
+                Picture = pictureFiles[userId - 1],
+                IsAdmin = (userId == 1) // first user is admin
             });
 
             accounts.Add(new Account
