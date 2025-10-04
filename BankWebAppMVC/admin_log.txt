@@ -1,0 +1,7 @@
+{"AdminId":1,"Action":"Searched users with keyword 'fa'","Timestamp":"2025-10-04T17:39:56.8898943+08:00"}
+{"AdminId":1,"Action":"Filtered/sorted transactions. Search='', Sort='DateAsc'","Timestamp":"2025-10-04T17:39:56.9181676+08:00"}
+{"AdminId":1,"Action":"Filtered/sorted transactions. Search='', Sort='DateAsc'","Timestamp":"2025-10-04T17:40:20.6556629+08:00"}
+{"AdminId":1,"Action":"Viewed admin dashboard","Timestamp":"2025-10-04T17:42:57.3928046+08:00"}
+{"AdminId":1,"Action":"Viewed admin dashboard","Timestamp":"2025-10-04T17:43:01.5213693+08:00"}
+{"AdminId":1,"Action":"Searched users with keyword 'f'","Timestamp":"2025-10-04T17:43:01.5253042+08:00"}
+{"AdminId":1,"Action":"Sorted transactions by 'DateAsc'","Timestamp":"2025-10-04T17:43:01.528459+08:00"}

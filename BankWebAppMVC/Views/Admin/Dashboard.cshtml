@@ -2,37 +2,97 @@
     var users = ViewBag.Users as List<BankWebAppMVC.Models.UserProfile> ?? new List<BankWebAppMVC.Models.UserProfile>();
     var accounts = ViewBag.Accounts as List<BankWebAppMVC.Models.Account> ?? new List<BankWebAppMVC.Models.Account>();
     var transactions = ViewBag.Transactions as List<BankWebAppMVC.Models.Transactions> ?? new List<BankWebAppMVC.Models.Transactions>();
+    var admin = ViewBag.CurrentAdmin as BankWebAppMVC.Models.UserProfile;
+
+    // Get query parameters
+    var userSearch = ViewContext.HttpContext.Request.Query["userSearch"].ToString()?.ToLower();
+    var txnSearch = ViewContext.HttpContext.Request.Query["txnSearch"].ToString()?.ToLower();
+    var txnSort = ViewContext.HttpContext.Request.Query["txnSort"].ToString();
+}
+
+@{
+    // Filter users
+    if (!string.IsNullOrWhiteSpace(userSearch))
+    {
+        users = users.Where(u =>
+            u.Name.ToLower().Contains(userSearch.ToLower()) ||
+            u.Email.ToLower().Contains(userSearch.ToLower()) ||
+            accounts.Any(a => a.UserId == u.UserId && a.AccountNumber.ToString().Contains(userSearch))
+        ).ToList();
+    }
+
+    // Filter transactions
+    if (!string.IsNullOrWhiteSpace(txnSearch))
+    {
+        transactions = transactions.Where(t =>
+            t.AccountNumber.ToString().Contains(txnSearch) ||
+            t.TransactionType.ToLower().Contains(txnSearch.ToLower()) ||
+            (!string.IsNullOrWhiteSpace(t.Description) && t.Description.ToLower().Contains(txnSearch.ToLower()))
+        ).ToList();
+    }
+
+    // Sort transactions
+    transactions = txnSort switch
+    {
+        "DateAsc" => transactions.OrderBy(t => t.Date).ToList(),
+        "DateDesc" => transactions.OrderByDescending(t => t.Date).ToList(),
+        "AmountAsc" => transactions.OrderBy(t => t.Amount).ToList(),
+        "AmountDesc" => transactions.OrderByDescending(t => t.Amount).ToList(),
+        _ => transactions.OrderByDescending(t => t.Date).ToList(),
+    };
 }
 
 
-
 <div class="container mt-4">
-    <div class="text-center mb-4">
-        @{
-            var admin = ViewBag.CurrentAdmin as BankWebAppMVC.Models.UserProfile;
-        }
 
+    <!-- Admin Info -->
+    <div class="text-center mb-4">
         @if (admin != null)
         {
-            <div class="text-center mb-4">
-                <h2>Welcome, Admin @admin.Name</h2>
-                <img src="~/images/profiles/@admin.Picture" alt="@admin.Name" class="rounded-circle mt-2"
-                     style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #0d6efd;" />
-                <p class="text-muted mt-2">@admin.Email</p>
-            </div>
+            <h2>Welcome, Admin @admin.Name</h2>
+            <img src="~/images/profiles/@admin.Picture" alt="@admin.Name" class="rounded-circle mt-2"
+                 style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #0d6efd;" />
+            <p class="text-muted mt-2">
+                <strong>Email:</strong> @admin.Email <br />
+                <strong>Phone:</strong> @admin.Phone
+            </p>
         }
         else
         {
-            <div class="text-center mb-4">
-                <h2>Welcome, Admin</h2>
-                <p class="text-muted">(Admin info not found in session)</p>
-            </div>
+            <h2>Welcome, Admin</h2>
+            <p class="text-muted">(Admin info not found in session)</p>
         }
-
     </div>
 
     <hr />
 
+    <!-- Search / Filter Form -->
+    <form method="get" class="mb-3 row">
+        <div class="col">
+            <input type="text" name="userSearch" 
+                   value="@userSearch" 
+                   class="form-control" placeholder="Search users (name, email, account)" />
+        </div>
+        <div class="col">
+            <input type="text" name="txnSearch" 
+                   value="@txnSearch" 
+                   class="form-control" placeholder="Search transactions (account, type, description)" />
+        </div>
+        <div class="col">
+            <select name="txnSort" class="form-select">
+                <option value="DateAsc" selected="@(txnSort == "DateAsc" ? "selected" : null)">Date Ascending</option>
+                <option value="DateDesc" selected="@(txnSort == "DateDesc" ? "selected" : null)">Date Descending</option>
+                <option value="AmountAsc" selected="@(txnSort == "AmountAsc" ? "selected" : null)">Amount Ascending</option>
+                <option value="AmountDesc" selected="@(txnSort == "AmountDesc" ? "selected" : null)">Amount Descending</option>
+
+            </select>
+        </div>
+        <div class="col">
+            <button type="submit" class="btn btn-primary">Apply</button>
+        </div>
+    </form>
+
+    <!-- Registered Users -->
     <h3>Registered Users</h3>
     <table class="table table-striped table-bordered">
         <thead class="table-dark">
@@ -41,7 +101,9 @@
                 <th>Profile</th>
                 <th>Name</th>
                 <th>Email</th>
+                <th>Phone</th>
                 <th>Admin?</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -55,6 +117,7 @@
                     </td>
                     <td>@u.Name</td>
                     <td>@u.Email</td>
+                    <td>@u.Phone</td>
                     <td>@(u.IsAdmin ? "Yes" : "No")</td>
                     <td>
                         <a asp-controller="Admin" asp-action="Edit" asp-route-id="@u.UserId" class="btn btn-sm btn-primary">
@@ -64,9 +127,9 @@
                 </tr>
             }
         </tbody>
-
     </table>
 
+    <!-- Accounts -->
     <h3>Accounts</h3>
     <table class="table table-bordered">
         <thead class="table-dark">
@@ -90,6 +153,7 @@
         </tbody>
     </table>
 
+    <!-- Transactions -->
     <h3>Recent Transactions</h3>
     <table class="table table-hover">
         <thead class="table-dark">
@@ -116,4 +180,5 @@
             }
         </tbody>
     </table>
+
 </div>

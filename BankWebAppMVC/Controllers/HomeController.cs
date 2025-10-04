@@ -30,12 +30,13 @@ public class HomeController : Controller
         HttpContext.Session.SetInt32("UserId", user.UserId);
         HttpContext.Session.SetString("UserName", user.Name);
         HttpContext.Session.SetInt32("IsAdmin", user.IsAdmin ? 1 : 0);
+        HttpContext.Session.SetString("UserEmail", user.Email);
 
         return RedirectToAction("Dashboard");
     }
 
     // Dashboard
-    public async Task<IActionResult> Dashboard()
+    public async Task<IActionResult> Dashboard(DateTime? startDate, DateTime? endDate)
     {
         int? userId = HttpContext.Session.GetInt32("UserId");
         if (userId == null) return RedirectToAction("Index");
@@ -47,16 +48,25 @@ public class HomeController : Controller
         var accounts = await _bankService.GetAccountsByUserIdAsync(userId.Value);
         ViewBag.Accounts = accounts;
 
+        // Combine all transactions
         var allTransactions = new List<Transactions>();
         foreach (var acc in accounts)
         {
             var transactions = await _bankService.GetTransactionsByAccountAsync(acc.AccountNumber);
             allTransactions.AddRange(transactions);
         }
+
+        // Filter by date range if provided
+        if (startDate.HasValue)
+            allTransactions = allTransactions.Where(t => t.Date.Date >= startDate.Value.Date).ToList();
+        if (endDate.HasValue)
+            allTransactions = allTransactions.Where(t => t.Date.Date <= endDate.Value.Date).ToList();
+
         ViewBag.Transactions = allTransactions.OrderByDescending(t => t.Date).ToList();
 
         return View(user);
     }
+
 
     // Transfer
     [HttpPost]

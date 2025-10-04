@@ -1,8 +1,9 @@
-﻿using System.Net.Http;
-using BankWebAppMVC.Models;
+﻿using BankWebAppMVC.Models;
 using BankWebAppMVC.Services;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using RestSharp;
+using System.IO;
 
 namespace BankWebAppMVC.Controllers
 {
@@ -10,18 +11,17 @@ namespace BankWebAppMVC.Controllers
     {
         private readonly BankApiService _bankService;
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly string apiBaseUrl = "https://localhost:7276/api/UserProfiles"; // adjust port
+        private readonly IWebHostEnvironment _env;
 
-        public AdminController(BankApiService bankService, IHttpClientFactory httpClientFactory)
+        public AdminController(BankApiService bankService, IHttpClientFactory httpClientFactory, IWebHostEnvironment env)
         {
             _bankService = bankService;
             _httpClientFactory = httpClientFactory;
+            _env = env;
         }
 
-        // Admin dashboard
-        public async Task<IActionResult> Dashboard()
+        public async Task<IActionResult> Dashboard(string userSearch, string txnSearch, string txnSort)
         {
-            // Get all users
             var users = await _bankService.GetAllUsersAsync() ?? new List<UserProfile>();
             var allAccounts = new List<Account>();
             var allTransactions = new List<Transactions>();
@@ -39,11 +39,53 @@ namespace BankWebAppMVC.Controllers
                 }
             }
 
-            // Identify the currently logged-in admin
+            // Identify currently logged-in admin
             var currentAdminEmail = HttpContext.Session.GetString("UserEmail");
             var currentAdmin = users.FirstOrDefault(u => u.Email == currentAdminEmail);
 
-            // Pass all to ViewBag
+            // Log dashboard view
+            LogAdminAction(currentAdmin?.UserId, "Viewed admin dashboard");
+
+            // Filter users
+            if (!string.IsNullOrWhiteSpace(userSearch))
+            {
+                users = users.Where(u =>
+                    u.Name.ToLower().Contains(userSearch.ToLower()) ||
+                    u.Email.ToLower().Contains(userSearch.ToLower()) ||
+                    allAccounts.Any(a => a.UserId == u.UserId && a.AccountNumber.ToString().Contains(userSearch))
+                ).ToList();
+
+                LogAdminAction(currentAdmin?.UserId, $"Searched users with keyword '{userSearch}'");
+            }
+
+            // Filter transactions
+            if (!string.IsNullOrWhiteSpace(txnSearch))
+            {
+                allTransactions = allTransactions.Where(t =>
+                    t.AccountNumber.ToString().Contains(txnSearch) ||
+                    t.TransactionType.ToLower().Contains(txnSearch.ToLower()) ||
+                    (!string.IsNullOrWhiteSpace(t.Description) && t.Description.ToLower().Contains(txnSearch.ToLower()))
+                ).ToList();
+
+                LogAdminAction(currentAdmin?.UserId, $"Filtered transactions with keyword '{txnSearch}'");
+            }
+
+            // Sort transactions
+            if (!string.IsNullOrWhiteSpace(txnSort))
+            {
+                allTransactions = txnSort switch
+                {
+                    "DateAsc" => allTransactions.OrderBy(t => t.Date).ToList(),
+                    "DateDesc" => allTransactions.OrderByDescending(t => t.Date).ToList(),
+                    "AmountAsc" => allTransactions.OrderBy(t => t.Amount).ToList(),
+                    "AmountDesc" => allTransactions.OrderByDescending(t => t.Amount).ToList(),
+                    _ => allTransactions.OrderByDescending(t => t.Date).ToList()
+                };
+
+                LogAdminAction(currentAdmin?.UserId, $"Sorted transactions by '{txnSort}'");
+            }
+
+            // Pass data to ViewBag
             ViewBag.Users = users;
             ViewBag.Accounts = allAccounts;
             ViewBag.Transactions = allTransactions.OrderByDescending(t => t.Date).ToList();
@@ -51,98 +93,14 @@ namespace BankWebAppMVC.Controllers
 
             return View();
         }
-        public async Task<IActionResult> Edit(int id)
+
+        // Console logging method
+        private void LogAdminAction(int? adminId, string action)
         {
-            var users = await _bankService.GetAllUsersAsync();
-            var user = users.FirstOrDefault(u => u.UserId == id);
-            if (user == null) return NotFound();
-            return View(user);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Edit(UserProfile model)
-        {
-            var request = new RestRequest($"api/userprofiles/{model.UserId}", Method.Put).AddJsonBody(model);
-            var response = await _bankService.ExecuteRequestAsync(request);
-
-            if (!response.IsSuccessful)
-            {
-                ModelState.AddModelError("", "Could not update user");
-                return View(model);
-            }
-
-            return RedirectToAction("Dashboard");
+            Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] AdminId: {adminId ?? 0}, Action: {action}");
         }
 
 
-
-
-        public IActionResult Create() => View();
-
-        [HttpPost]
-        public async Task<IActionResult> Create(UserProfile model)
-        {
-            var request = new RestRequest("api/userprofiles", Method.Post).AddJsonBody(model);
-            var response = await _bankService.ExecuteRequestAsync(request);
-
-            if (!response.IsSuccessful)
-            {
-                ModelState.AddModelError("", "Could not create user");
-                return View(model);
-            }
-
-            return RedirectToAction("Dashboard");
-        }
-
-
-        // GET: /Admin/EditUser/5
-        [HttpGet]
-        public async Task<IActionResult> EditUser(int id)
-        {
-            var user = await _bankService.GetUserByIdAsync(id);
-            if (user == null) return NotFound();
-            return View(user); // EditUser.cshtml
-        }
-
-        // POST: /Admin/EditUser
-        [HttpPost]
-        public async Task<IActionResult> EditUser(UserProfile model)
-        {
-            if (!ModelState.IsValid) return View(model);
-
-            var existingUser = await _bankService.GetUserByIdAsync(model.UserId);
-            if (existingUser == null)
-            {
-                ModelState.AddModelError("", "User not found");
-                return View(model);
-            }
-
-            existingUser.Name = model.Name;
-            existingUser.Email = model.Email;
-            existingUser.Phone = model.Phone;
-            existingUser.Address = model.Address;
-            existingUser.Picture = model.Picture;
-
-            // Optional password update
-            if (!string.IsNullOrWhiteSpace(model.Password))
-                existingUser.Password = model.Password;
-
-            existingUser.IsAdmin = model.IsAdmin; // Admin can update this
-
-            var request = new RestRequest($"api/userprofiles/{existingUser.UserId}", Method.Put)
-                .AddJsonBody(existingUser);
-
-            var response = await _bankService.ExecuteRequestAsync(request);
-
-            if (!response.IsSuccessful)
-            {
-                ModelState.AddModelError("", "Could not update profile");
-                return View(model);
-            }
-
-            TempData["SuccessMessage"] = "User updated successfully!";
-            return RedirectToAction("Dashboard");
-        }
-
+       
     }
 }

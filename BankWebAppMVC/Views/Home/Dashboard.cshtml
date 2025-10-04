@@ -5,77 +5,99 @@
 
 <div class="text-center mb-4">
     <h2>Welcome, @Model.Name</h2>
+
     <img src="~/images/profiles/@Model.Picture" alt="@Model.Name" class="rounded-circle mt-2"
          style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #198754;" />
-    <p class="text-muted mt-2">@Model.Email</p>
+
+    <p class="text-muted mt-2">
+        <strong>Email:</strong> @Model.Email <br />
+        <strong>Phone:</strong> @Model.Phone
+    </p>
 
     <!-- Edit Profile Button -->
     <a asp-action="Edit" class="btn btn-primary mt-2">Edit Profile</a>
 </div>
 
+<hr />
 
-    <hr />
-
-    <h4>Accounts</h4>
-    <table class="table table-striped">
-        <thead>
+<h4>Accounts</h4>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Account Number</th>
+            <th>Type</th>
+            <th>Balance</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var acc in ViewBag.Accounts)
+        {
             <tr>
-                <th>Account Number</th>
-                <th>Type</th>
-                <th>Balance</th>
+                <td>@acc.AccountNumber</td>
+                <td>@acc.AccountType</td>
+                <td>@acc.Balance.ToString("C")</td>
             </tr>
-        </thead>
-        <tbody>
-            @foreach (var acc in ViewBag.Accounts)
-            {
-                <tr>
-                    <td>@acc.AccountNumber</td>
-                    <td>@acc.AccountType</td>
-                    <td>@acc.Balance.ToString("C")</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+        }
+    </tbody>
+</table>
 
-    <h4 class="mt-4">Transfer Money</h4>
-    <form method="post" asp-action="Transfer">
-        <div class="row mb-3">
-            <div class="col">
-                <input type="number" name="fromAccount" class="form-control" placeholder="From Account" required />
-            </div>
-            <div class="col">
-                <input type="number" name="toAccount" class="form-control" placeholder="To Account" required />
-            </div>
-            <div class="col">
-                <input type="number" step="0.01" name="amount" class="form-control" placeholder="Amount" required />
-            </div>
+<h4 class="mt-4">Transfer Money</h4>
+<form method="post" asp-action="Transfer">
+    <div class="row mb-3">
+        <div class="col">
+            <input type="number" name="fromAccount" class="form-control" placeholder="From Account" required />
         </div>
-        <div class="mb-3">
-            <input type="text" name="description" class="form-control" placeholder="Description" />
+        <div class="col">
+            <input type="number" name="toAccount" class="form-control" placeholder="To Account" required />
         </div>
-        <button type="submit" class="btn btn-success">Transfer</button>
-    </form>
+        <div class="col">
+            <input type="number" step="0.01" name="amount" class="form-control" placeholder="Amount" required />
+        </div>
+    </div>
+    <div class="mb-3">
+        <input type="text" name="description" class="form-control" placeholder="Description" />
+    </div>
+    <button type="submit" class="btn btn-success">Transfer</button>
+</form>
 
-    <h4 class="mt-4">Transactions</h4>
-    <table class="table table-bordered table-hover">
-        <thead class="table-dark">
+<h4 class="mt-4">Transactions</h4>
+
+<form method="get" asp-action="Dashboard" class="row g-3 mb-3">
+    <div class="col-auto">
+        <label for="startDate" class="form-label">Start Date</label>
+        <input type="date" name="startDate" class="form-control"
+               value="@(Context.Request.Query["startDate"])" />
+    </div>
+    <div class="col-auto">
+        <label for="endDate" class="form-label">End Date</label>
+        <input type="date" name="endDate" class="form-control"
+               value="@(Context.Request.Query["endDate"])" />
+    </div>
+    <div class="col-auto align-self-end">
+        <button type="submit" class="btn btn-primary mt-2">Filter</button>
+    </div>
+</form>
+
+
+<table class="table table-bordered table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var t in ViewBag.Transactions)
+        {
             <tr>
-                <th>Date</th>
-                <th>Type</th>
-                <th>Amount</th>
-                <th>Description</th>
+                <td>@t.Date.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@t.TransactionType</td>
+                <td>@t.Amount.ToString("C")</td>
+                <td>@t.Description</td>
             </tr>
-        </thead>
-        <tbody>
-            @foreach (var t in ViewBag.Transactions)
-            {
-                <tr>
-                    <td>@t.Date.ToString("dd/MM/yyyy HH:mm")</td>
-                    <td>@t.TransactionType</td>
-                    <td>@t.Amount.ToString("C")</td>
-                    <td>@t.Description</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
+        }
+    </tbody>
+</table>
+
