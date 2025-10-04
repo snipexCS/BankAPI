@@ -1,6 +1,7 @@
 ﻿using BankWebAppMVC.Models;
 using BankWebAppMVC.Services;
 using Microsoft.AspNetCore.Mvc;
+using RestSharp;
 
 namespace BankWebAppMVC.Controllers
 {
@@ -13,29 +14,66 @@ namespace BankWebAppMVC.Controllers
             _bankService = bankService;
         }
 
+        // User Dashboard
         public async Task<IActionResult> Dashboard()
         {
-            int? userId = HttpContext.Session.GetInt32("UserId");
-            if (userId == null) return RedirectToAction("Index", "Home");
+            // Get current user email from session
+            var email = HttpContext.Session.GetString("UserEmail");
+            if (string.IsNullOrEmpty(email))
+                return RedirectToAction("Login", "Account");
 
-            var accounts = await _bankService.GetAccountsByUserIdAsync(userId.Value);
-            return View(accounts);
+            var allUsers = await _bankService.GetAllUsersAsync() ?? new List<UserProfile>();
+            var currentUser = allUsers.FirstOrDefault(u => u.Email == email);
+            if (currentUser == null) return RedirectToAction("Login", "Account");
+
+            // Get accounts
+            var accounts = await _bankService.GetAccountsByUserIdAsync(currentUser.UserId) ?? new List<Account>();
+
+            // Get transactions for all accounts
+            var transactions = new List<Transactions>();
+            foreach (var acc in accounts)
+            {
+                var txns = await _bankService.GetTransactionsByAccountAsync(acc.AccountNumber) ?? new List<Transactions>();
+                transactions.AddRange(txns);
+            }
+
+            ViewBag.Accounts = accounts;
+            ViewBag.Transactions = transactions.OrderByDescending(t => t.Date).ToList();
+
+            return View(currentUser);
         }
 
-        public async Task<IActionResult> Transactions(int accountNumber)
-        {
-            var transactions = await _bankService.GetTransactionsByAccountAsync(accountNumber);
-            return View(transactions);
-        }
+        // Money Transfer GET
+        public IActionResult Transfer() => View();
 
+        // Money Transfer POST
         [HttpPost]
         public async Task<IActionResult> Transfer(int fromAccount, int toAccount, decimal amount, string description)
         {
-            var success = await _bankService.TransferMoneyAsync(fromAccount, toAccount, amount, description);
+            var email = HttpContext.Session.GetString("UserEmail");
+            if (string.IsNullOrEmpty(email))
+                return RedirectToAction("Login", "Account");
 
-            if (!success)
+            var allUsers = await _bankService.GetAllUsersAsync() ?? new List<UserProfile>();
+            var currentUser = allUsers.FirstOrDefault(u => u.Email == email);
+            if (currentUser == null) return RedirectToAction("Login", "Account");
+
+            // Build transfer object
+            var transferData = new
             {
-                TempData["Error"] = "Transfer failed. Check balances or account numbers.";
+                FromAccount = fromAccount,
+                ToAccount = toAccount,
+                Amount = amount,
+                Description = description,
+                UserId = currentUser.UserId
+            };
+
+            var request = new RestRequest("api/accounts/transfer", Method.Post).AddJsonBody(transferData);
+            var response = await _bankService.ExecuteRequestAsync(request);
+
+            if (!response.IsSuccessful)
+            {
+                TempData["Error"] = "Transfer failed. Please check your details and try again.";
                 return RedirectToAction("Dashboard");
             }
 

@@ -2,9 +2,18 @@ using BankWebAppMVC.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Register services
-builder.Services.AddSingleton(new BankApiService("https://localhost:7276/")); // <-- your API URL
+// Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Add IHttpClientFactory if needed (optional for RestSharp, but good for future)
+builder.Services.AddHttpClient();
+
+// Provide the BankApiService with the base URL explicitly
+string apiBaseUrl = "https://localhost:7276"; // your API base URL
+builder.Services.AddScoped(sp => new BankApiService(apiBaseUrl));
+
+// Add session
+builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -14,14 +23,9 @@ builder.Services.AddSession(options =>
 
 var app = builder.Build();
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseSession();
-app.UseAuthorization();
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapDefaultControllerRoute();
 
 app.Run();

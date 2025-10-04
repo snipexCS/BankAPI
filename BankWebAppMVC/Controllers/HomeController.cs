@@ -1,17 +1,22 @@
 ﻿using BankWebAppMVC.Models;
 using BankWebAppMVC.Services;
 using Microsoft.AspNetCore.Mvc;
+using RestSharp;
 
 public class HomeController : Controller
 {
     private readonly BankApiService _bankService;
-    public HomeController(BankApiService bankService) => _bankService = bankService;
 
-    // Login page
+    public HomeController(BankApiService bankService)
+    {
+        _bankService = bankService;
+    }
+
+    // Login GET
     [HttpGet]
     public IActionResult Index() => View();
 
-    // Handle login POST
+    // Login POST
     [HttpPost]
     public async Task<IActionResult> Index(string email, string password)
     {
@@ -22,16 +27,14 @@ public class HomeController : Controller
             return View();
         }
 
-        // Store user info in session
         HttpContext.Session.SetInt32("UserId", user.UserId);
         HttpContext.Session.SetString("UserName", user.Name);
         HttpContext.Session.SetInt32("IsAdmin", user.IsAdmin ? 1 : 0);
 
-        // Redirect to appropriate dashboard
         return RedirectToAction("Dashboard");
     }
 
-    // Common dashboard entry point
+    // Dashboard
     public async Task<IActionResult> Dashboard()
     {
         int? userId = HttpContext.Session.GetInt32("UserId");
@@ -44,7 +47,6 @@ public class HomeController : Controller
         var accounts = await _bankService.GetAccountsByUserIdAsync(userId.Value);
         ViewBag.Accounts = accounts;
 
-        // Combine all transactions
         var allTransactions = new List<Transactions>();
         foreach (var acc in accounts)
         {
@@ -56,7 +58,7 @@ public class HomeController : Controller
         return View(user);
     }
 
-    // Transfer money
+    // Transfer
     [HttpPost]
     public async Task<IActionResult> Transfer(int fromAccount, int toAccount, decimal amount, string description)
     {
@@ -71,6 +73,57 @@ public class HomeController : Controller
         return RedirectToAction("Dashboard");
     }
 
+    // GET: /Home/Edit
+    [HttpGet]
+    public async Task<IActionResult> Edit()
+    {
+        int? userId = HttpContext.Session.GetInt32("UserId");
+        if (userId == null) return RedirectToAction("Index");
+
+        var user = await _bankService.GetUserByIdAsync(userId.Value);
+        if (user == null) return NotFound();
+
+        return View(user);
+    }
+
+    // POST: /Home/Edit
+    [HttpPost]
+    [HttpPost]
+    public async Task<IActionResult> Edit(UserProfile model)
+    {
+        if (!ModelState.IsValid) return View(model);
+
+        var existingUser = await _bankService.GetUserByIdAsync(model.UserId);
+        if (existingUser == null)
+        {
+            ModelState.AddModelError("", "User not found");
+            return View(model);
+        }
+
+        existingUser.Name = model.Name;
+        existingUser.Email = model.Email;
+        existingUser.Phone = model.Phone;
+        existingUser.Address = model.Address;
+        existingUser.Picture = model.Picture;
+
+        // Only update password if entered
+        if (!string.IsNullOrWhiteSpace(model.Password))
+            existingUser.Password = model.Password;
+
+        var request = new RestRequest($"api/userprofiles/{existingUser.UserId}", Method.Put)
+            .AddJsonBody(existingUser);
+
+        var response = await _bankService.ExecuteRequestAsync(request);
+
+        if (!response.IsSuccessful)
+        {
+            ModelState.AddModelError("", "Could not update profile");
+            return View(model);
+        }
+
+        TempData["SuccessMessage"] = "Profile updated successfully!";
+        return RedirectToAction("Dashboard");
+    }
     // Logout
     public IActionResult Logout()
     {

@@ -3,12 +3,16 @@
     ViewData["Title"] = "Dashboard";
 }
 
-<div class="container mt-4">
-    <div class="text-center mb-4">
-        <h2>Welcome, @Model.Name</h2>
-        <img src="~/images/profiles/@Model.Picture" alt="@Model.Name" class="rounded-circle mt-2" style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #198754;" />
-        <p class="text-muted mt-2">@Model.Email</p>
-    </div>
+<div class="text-center mb-4">
+    <h2>Welcome, @Model.Name</h2>
+    <img src="~/images/profiles/@Model.Picture" alt="@Model.Name" class="rounded-circle mt-2"
+         style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #198754;" />
+    <p class="text-muted mt-2">@Model.Email</p>
+
+    <!-- Edit Profile Button -->
+    <a asp-action="Edit" class="btn btn-primary mt-2">Edit Profile</a>
+</div>
+
 
     <hr />
 

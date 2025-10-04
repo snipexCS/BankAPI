@@ -56,9 +56,15 @@
                     <td>@u.Name</td>
                     <td>@u.Email</td>
                     <td>@(u.IsAdmin ? "Yes" : "No")</td>
+                    <td>
+                        <a asp-controller="Admin" asp-action="Edit" asp-route-id="@u.UserId" class="btn btn-sm btn-primary">
+                            Edit
+                        </a>
+                    </td>
                 </tr>
             }
         </tbody>
+
     </table>
 
     <h3>Accounts</h3>

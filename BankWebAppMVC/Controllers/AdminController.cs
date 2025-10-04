@@ -1,4 +1,5 @@
-﻿using BankWebAppMVC.Models;
+﻿using System.Net.Http;
+using BankWebAppMVC.Models;
 using BankWebAppMVC.Services;
 using Microsoft.AspNetCore.Mvc;
 using RestSharp;
@@ -8,10 +9,13 @@ namespace BankWebAppMVC.Controllers
     public class AdminController : Controller
     {
         private readonly BankApiService _bankService;
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly string apiBaseUrl = "https://localhost:7276/api/UserProfiles"; // adjust port
 
-        public AdminController(BankApiService bankService)
+        public AdminController(BankApiService bankService, IHttpClientFactory httpClientFactory)
         {
             _bankService = bankService;
+            _httpClientFactory = httpClientFactory;
         }
 
         // Admin dashboard
@@ -47,27 +51,6 @@ namespace BankWebAppMVC.Controllers
 
             return View();
         }
-
-
-
-
-        public IActionResult Create() => View();
-
-        [HttpPost]
-        public async Task<IActionResult> Create(UserProfile model)
-        {
-            var request = new RestRequest("api/userprofiles", Method.Post).AddJsonBody(model);
-            var response = await _bankService.ExecuteRequestAsync(request);
-
-            if (!response.IsSuccessful)
-            {
-                ModelState.AddModelError("", "Could not create user");
-                return View(model);
-            }
-
-            return RedirectToAction("Dashboard");
-        }
-
         public async Task<IActionResult> Edit(int id)
         {
             var users = await _bankService.GetAllUsersAsync();
@@ -91,14 +74,75 @@ namespace BankWebAppMVC.Controllers
             return RedirectToAction("Dashboard");
         }
 
-        public async Task<IActionResult> Delete(int id)
+
+
+
+        public IActionResult Create() => View();
+
+        [HttpPost]
+        public async Task<IActionResult> Create(UserProfile model)
         {
-            var request = new RestRequest($"api/userprofiles/{id}", Method.Delete);
+            var request = new RestRequest("api/userprofiles", Method.Post).AddJsonBody(model);
             var response = await _bankService.ExecuteRequestAsync(request);
 
-            if (!response.IsSuccessful) return BadRequest();
+            if (!response.IsSuccessful)
+            {
+                ModelState.AddModelError("", "Could not create user");
+                return View(model);
+            }
 
             return RedirectToAction("Dashboard");
         }
+
+
+        // GET: /Admin/EditUser/5
+        [HttpGet]
+        public async Task<IActionResult> EditUser(int id)
+        {
+            var user = await _bankService.GetUserByIdAsync(id);
+            if (user == null) return NotFound();
+            return View(user); // EditUser.cshtml
+        }
+
+        // POST: /Admin/EditUser
+        [HttpPost]
+        public async Task<IActionResult> EditUser(UserProfile model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var existingUser = await _bankService.GetUserByIdAsync(model.UserId);
+            if (existingUser == null)
+            {
+                ModelState.AddModelError("", "User not found");
+                return View(model);
+            }
+
+            existingUser.Name = model.Name;
+            existingUser.Email = model.Email;
+            existingUser.Phone = model.Phone;
+            existingUser.Address = model.Address;
+            existingUser.Picture = model.Picture;
+
+            // Optional password update
+            if (!string.IsNullOrWhiteSpace(model.Password))
+                existingUser.Password = model.Password;
+
+            existingUser.IsAdmin = model.IsAdmin; // Admin can update this
+
+            var request = new RestRequest($"api/userprofiles/{existingUser.UserId}", Method.Put)
+                .AddJsonBody(existingUser);
+
+            var response = await _bankService.ExecuteRequestAsync(request);
+
+            if (!response.IsSuccessful)
+            {
+                ModelState.AddModelError("", "Could not update profile");
+                return View(model);
+            }
+
+            TempData["SuccessMessage"] = "User updated successfully!";
+            return RedirectToAction("Dashboard");
+        }
+
     }
 }
