@@ -19,6 +19,11 @@ namespace BankWebAppMVC.Controllers
             _httpClientFactory = httpClientFactory;
             _env = env;
         }
+        [HttpGet]
+        public IActionResult CreateUser()
+        {
+            return View();
+        }
 
         public async Task<IActionResult> Dashboard(string userSearch, string txnSearch, string txnSort)
         {
@@ -99,8 +104,98 @@ namespace BankWebAppMVC.Controllers
         {
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] AdminId: {adminId ?? 0}, Action: {action}");
         }
+        public IActionResult Create() => View();
 
+        [HttpPost]
+        public async Task<IActionResult> Create(UserProfile model)
+        {
+            var request = new RestRequest("api/userprofiles", Method.Post).AddJsonBody(model);
+            var response = await _bankService.ExecuteRequestAsync(request);
 
-       
+            if (!response.IsSuccessful)
+            {
+                ModelState.AddModelError("", "Could not create user");
+                return View(model);
+            }
+
+            return RedirectToAction("Dashboard");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var user = await _bankService.GetUserByIdAsync(id);
+            if (user == null)
+                return NotFound();
+
+            return View(user); // Returns Edit.cshtml view
+        }
+
+        // POST: /Admin/EditUser
+        [HttpPost]
+        public async Task<IActionResult> EditUser(UserProfile updatedUser)
+        {
+            if (!ModelState.IsValid)
+                return View("Edit", updatedUser);
+
+            // Build the request to update the user via your API
+            var request = new RestRequest($"api/userprofiles/{updatedUser.UserId}", Method.Put)
+                .AddJsonBody(updatedUser);
+
+            var response = await _bankService.ExecuteRequestAsync(request);
+
+            if (response.IsSuccessful)
+            {
+                Console.WriteLine($"[Admin Edit] User {updatedUser.UserId} updated successfully by admin.");
+                return RedirectToAction("Dashboard");
+            }
+
+            ModelState.AddModelError("", "Error updating user. Please try again.");
+            return View("Edit", updatedUser);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateUser(UserProfile newUser)
+        {
+            if (!ModelState.IsValid)
+                return View(newUser);
+
+            var request = new RestRequest("api/userprofiles", Method.Post)
+                .AddJsonBody(newUser);
+
+            var response = await _bankService.ExecuteRequestAsync(request);
+
+            if (!response.IsSuccessful)
+            {
+                TempData["Error"] = "Failed to create user. Please try again.";
+                return View(newUser);
+            }
+
+            TempData["Success"] = $"User '{newUser.Name}' created successfully!";
+            return RedirectToAction("Dashboard");
+        }
+
+        // POST: Admin/DeleteUser/{id}
+        [HttpPost]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            var request = new RestRequest($"api/userprofiles/{id}", Method.Delete);
+            var response = await _bankService.ExecuteRequestAsync(request);
+
+            if (!response.IsSuccessful)
+            {
+                TempData["Error"] = "Failed to delete user.";
+            }
+            else
+            {
+                TempData["Success"] = "User deleted successfully.";
+            }
+
+            return RedirectToAction("Dashboard");
+        }
     }
+
+
+
 }
+

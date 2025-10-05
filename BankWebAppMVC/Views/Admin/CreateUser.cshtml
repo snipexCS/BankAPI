@@ -1,0 +1,48 @@
+﻿@model BankWebAppMVC.Models.UserProfile
+@{
+    ViewData["Title"] = "Create New User";
+}
+
+<div class="container mt-4">
+    <h2>Create New User</h2>
+
+    <form asp-action="CreateUser" method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label"></label>
+            <input asp-for="Name" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label"></label>
+            <input asp-for="Email" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Phone" class="form-label"></label>
+            <input asp-for="Phone" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Address" class="form-label"></label>
+            <input asp-for="Address" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Password" class="form-label"></label>
+            <input asp-for="Password" type="password" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Picture" class="form-label">Profile Picture Filename</label>
+            <input asp-for="Picture" class="form-control" />
+        </div>
+
+        <div class="mb-3 form-check">
+            <input asp-for="IsAdmin" class="form-check-input" />
+            <label asp-for="IsAdmin" class="form-check-label">Is Admin?</label>
+        </div>
+
+        <button type="submit" class="btn btn-success">Create User</button>
+        <a asp-action="Dashboard" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>

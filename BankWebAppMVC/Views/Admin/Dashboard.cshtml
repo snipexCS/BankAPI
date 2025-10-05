@@ -1,13 +1,13 @@
 ﻿@{
-    var users = ViewBag.Users as List<BankWebAppMVC.Models.UserProfile> ?? new List<BankWebAppMVC.Models.UserProfile>();
-    var accounts = ViewBag.Accounts as List<BankWebAppMVC.Models.Account> ?? new List<BankWebAppMVC.Models.Account>();
-    var transactions = ViewBag.Transactions as List<BankWebAppMVC.Models.Transactions> ?? new List<BankWebAppMVC.Models.Transactions>();
-    var admin = ViewBag.CurrentAdmin as BankWebAppMVC.Models.UserProfile;
+var users = ViewBag.Users as List<BankWebAppMVC.Models.UserProfile> ?? new List<BankWebAppMVC.Models.UserProfile>();
+var accounts = ViewBag.Accounts as List<BankWebAppMVC.Models.Account> ?? new List<BankWebAppMVC.Models.Account>();
+var transactions = ViewBag.Transactions as List<BankWebAppMVC.Models.Transactions> ?? new List<BankWebAppMVC.Models.Transactions>();
+var admin = ViewBag.CurrentAdmin as BankWebAppMVC.Models.UserProfile;
 
-    // Get query parameters
-    var userSearch = ViewContext.HttpContext.Request.Query["userSearch"].ToString()?.ToLower();
-    var txnSearch = ViewContext.HttpContext.Request.Query["txnSearch"].ToString()?.ToLower();
-    var txnSort = ViewContext.HttpContext.Request.Query["txnSort"].ToString();
+// Get query parameters
+var userSearch = ViewContext.HttpContext.Request.Query["userSearch"].ToString()?.ToLower();
+var txnSearch = ViewContext.HttpContext.Request.Query["txnSearch"].ToString()?.ToLower();
+var txnSort = ViewContext.HttpContext.Request.Query["txnSort"].ToString();
 }
 
 @{
@@ -42,7 +42,6 @@
     };
 }
 
-
 <div class="container mt-4">
 
     <!-- Admin Info -->
@@ -69,13 +68,13 @@
     <!-- Search / Filter Form -->
     <form method="get" class="mb-3 row">
         <div class="col">
-            <input type="text" name="userSearch" 
-                   value="@userSearch" 
+            <input type="text" name="userSearch"
+                   value="@userSearch"
                    class="form-control" placeholder="Search users (name, email, account)" />
         </div>
         <div class="col">
-            <input type="text" name="txnSearch" 
-                   value="@txnSearch" 
+            <input type="text" name="txnSearch"
+                   value="@txnSearch"
                    class="form-control" placeholder="Search transactions (account, type, description)" />
         </div>
         <div class="col">
@@ -84,13 +83,15 @@
                 <option value="DateDesc" selected="@(txnSort == "DateDesc" ? "selected" : null)">Date Descending</option>
                 <option value="AmountAsc" selected="@(txnSort == "AmountAsc" ? "selected" : null)">Amount Ascending</option>
                 <option value="AmountDesc" selected="@(txnSort == "AmountDesc" ? "selected" : null)">Amount Descending</option>
-
             </select>
         </div>
         <div class="col">
             <button type="submit" class="btn btn-primary">Apply</button>
         </div>
     </form>
+
+    <!-- Create New User Button -->
+    <a asp-action="CreateUser" class="btn btn-success mb-2">Create New User</a>
 
     <!-- Registered Users -->
     <h3>Registered Users</h3>
@@ -123,6 +124,12 @@
                         <a asp-controller="Admin" asp-action="Edit" asp-route-id="@u.UserId" class="btn btn-sm btn-primary">
                             Edit
                         </a>
+                        <form asp-action="DeleteUser" asp-route-id="@u.UserId" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Are you sure you want to delete this user?');">
+                                Delete
+                            </button>
+                        </form>
                     </td>
                 </tr>
             }
