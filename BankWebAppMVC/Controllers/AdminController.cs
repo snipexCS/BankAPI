@@ -131,28 +131,44 @@ namespace BankWebAppMVC.Controllers
             return View(user); // Returns Edit.cshtml view
         }
 
-        // POST: /Admin/EditUser
         [HttpPost]
         public async Task<IActionResult> EditUser(UserProfile updatedUser)
         {
             if (!ModelState.IsValid)
                 return View("Edit", updatedUser);
 
-            // Build the request to update the user via your API
-            var request = new RestRequest($"api/userprofiles/{updatedUser.UserId}", Method.Put)
-                .AddJsonBody(updatedUser);
+            // Fetch existing user from API
+            var existingUser = await _bankService.GetUserByIdAsync(updatedUser.UserId);
+            if (existingUser == null)
+                return NotFound();
+
+            // Update fields
+            existingUser.Name = updatedUser.Name;
+            existingUser.Email = updatedUser.Email;
+            existingUser.Phone = updatedUser.Phone;
+            existingUser.Address = updatedUser.Address;
+            existingUser.Picture = updatedUser.Picture;
+
+            // Only update password if changed
+            if (!string.IsNullOrWhiteSpace(updatedUser.Password) && updatedUser.Password != "********")
+                existingUser.Password = updatedUser.Password;
+
+            // Send PUT request to API
+            var request = new RestRequest($"api/userprofiles/{existingUser.UserId}", Method.Put)
+                .AddJsonBody(existingUser);
 
             var response = await _bankService.ExecuteRequestAsync(request);
 
-            if (response.IsSuccessful)
+            if (!response.IsSuccessful)
             {
-                Console.WriteLine($"[Admin Edit] User {updatedUser.UserId} updated successfully by admin.");
-                return RedirectToAction("Dashboard");
+                ModelState.AddModelError("", "Error updating user. Please try again.");
+                return View("Edit", updatedUser);
             }
 
-            ModelState.AddModelError("", "Error updating user. Please try again.");
-            return View("Edit", updatedUser);
+            TempData["Success"] = "User updated successfully!";
+            return RedirectToAction("Dashboard");
         }
+
 
         [HttpPost]
         public async Task<IActionResult> CreateUser(UserProfile newUser)

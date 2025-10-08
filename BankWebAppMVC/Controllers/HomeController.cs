@@ -99,6 +99,7 @@ public class HomeController : Controller
     // POST: /Home/Edit
     [HttpPost]
     [HttpPost]
+    [HttpPost]
     public async Task<IActionResult> Edit(UserProfile model)
     {
         if (!ModelState.IsValid) return View(model);
@@ -116,8 +117,8 @@ public class HomeController : Controller
         existingUser.Address = model.Address;
         existingUser.Picture = model.Picture;
 
-        // Only update password if entered
-        if (!string.IsNullOrWhiteSpace(model.Password))
+        // Only update password if changed
+        if (!string.IsNullOrWhiteSpace(model.Password) && model.Password != "********")
             existingUser.Password = model.Password;
 
         var request = new RestRequest($"api/userprofiles/{existingUser.UserId}", Method.Put)
@@ -134,6 +135,7 @@ public class HomeController : Controller
         TempData["SuccessMessage"] = "Profile updated successfully!";
         return RedirectToAction("Dashboard");
     }
+
     // Logout
     public IActionResult Logout()
     {
