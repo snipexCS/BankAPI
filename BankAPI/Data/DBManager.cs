@@ -31,7 +31,7 @@ namespace BankAPI.Data
                 .HasForeignKey(t => t.AccountNumber)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Call DataSeeder here to populate initial data dynamically
+            
             DataSeeder.SeedRandomData(modelBuilder);
         }
     }

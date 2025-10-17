@@ -10,14 +10,14 @@ namespace BankWebAppMVC.Controllers
     public class AdminController : Controller
     {
         private readonly BankApiService _bankService;
-        private readonly IHttpClientFactory _httpClientFactory;
-        private readonly IWebHostEnvironment _env;
+        
+        
 
-        public AdminController(BankApiService bankService, IHttpClientFactory httpClientFactory, IWebHostEnvironment env)
+        public AdminController(BankApiService bankService )
         {
             _bankService = bankService;
-            _httpClientFactory = httpClientFactory;
-            _env = env;
+        
+            
         }
         [HttpGet]
         public IActionResult CreateUser()
@@ -31,7 +31,7 @@ namespace BankWebAppMVC.Controllers
             var allAccounts = new List<Account>();
             var allTransactions = new List<Transactions>();
 
-            // Collect account + transaction data
+            
             foreach (var user in users)
             {
                 var accounts = await _bankService.GetAccountsByUserIdAsync(user.UserId) ?? new List<Account>();
@@ -44,14 +44,14 @@ namespace BankWebAppMVC.Controllers
                 }
             }
 
-            // Identify currently logged-in admin
+            
             var currentAdminEmail = HttpContext.Session.GetString("UserEmail");
             var currentAdmin = users.FirstOrDefault(u => u.Email == currentAdminEmail);
 
-            // Log dashboard view
+            
             LogAdminAction(currentAdmin?.UserId, "Viewed admin dashboard");
 
-            // Filter users
+            
             if (!string.IsNullOrWhiteSpace(userSearch))
             {
                 users = users.Where(u =>
@@ -63,7 +63,7 @@ namespace BankWebAppMVC.Controllers
                 LogAdminAction(currentAdmin?.UserId, $"Searched users with keyword '{userSearch}'");
             }
 
-            // Filter transactions
+            
             if (!string.IsNullOrWhiteSpace(txnSearch))
             {
                 allTransactions = allTransactions.Where(t =>
@@ -75,7 +75,7 @@ namespace BankWebAppMVC.Controllers
                 LogAdminAction(currentAdmin?.UserId, $"Filtered transactions with keyword '{txnSearch}'");
             }
 
-            // Sort transactions
+           
             if (!string.IsNullOrWhiteSpace(txnSort))
             {
                 allTransactions = txnSort switch
@@ -90,7 +90,7 @@ namespace BankWebAppMVC.Controllers
                 LogAdminAction(currentAdmin?.UserId, $"Sorted transactions by '{txnSort}'");
             }
 
-            // Pass data to ViewBag
+            
             ViewBag.Users = users;
             ViewBag.Accounts = allAccounts;
             ViewBag.Transactions = allTransactions.OrderByDescending(t => t.Date).ToList();
@@ -99,7 +99,7 @@ namespace BankWebAppMVC.Controllers
             return View();
         }
 
-        // Console logging method
+        
         private void LogAdminAction(int? adminId, string action)
         {
             Console.WriteLine($"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] AdminId: {adminId ?? 0}, Action: {action}");
@@ -128,7 +128,7 @@ namespace BankWebAppMVC.Controllers
             if (user == null)
                 return NotFound();
 
-            return View(user); // Returns Edit.cshtml view
+            return View(user); 
         }
 
         [HttpPost]
@@ -137,23 +137,21 @@ namespace BankWebAppMVC.Controllers
             if (!ModelState.IsValid)
                 return View("Edit", updatedUser);
 
-            // Fetch existing user from API
+            
             var existingUser = await _bankService.GetUserByIdAsync(updatedUser.UserId);
             if (existingUser == null)
                 return NotFound();
 
-            // Update fields
             existingUser.Name = updatedUser.Name;
             existingUser.Email = updatedUser.Email;
             existingUser.Phone = updatedUser.Phone;
             existingUser.Address = updatedUser.Address;
             existingUser.Picture = updatedUser.Picture;
 
-            // Only update password if changed
+            
             if (!string.IsNullOrWhiteSpace(updatedUser.Password) && updatedUser.Password != "********")
                 existingUser.Password = updatedUser.Password;
 
-            // Send PUT request to API
             var request = new RestRequest($"api/userprofiles/{existingUser.UserId}", Method.Put)
                 .AddJsonBody(existingUser);
 
@@ -191,7 +189,7 @@ namespace BankWebAppMVC.Controllers
             return RedirectToAction("Dashboard");
         }
 
-        // POST: Admin/DeleteUser/{id}
+        
         [HttpPost]
         public async Task<IActionResult> DeleteUser(int id)
         {

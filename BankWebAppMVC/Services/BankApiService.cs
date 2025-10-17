@@ -15,7 +15,7 @@ namespace BankWebAppMVC.Services
             _client = new RestClient(_baseUrl);
         }
 
-        // Login / Authenticate
+       
         public async Task<UserProfile?> AuthenticateAsync(string email, string password)
         {
             var request = new RestRequest("api/userprofiles/auth", Method.Post)
@@ -29,7 +29,7 @@ namespace BankWebAppMVC.Services
             return JsonConvert.DeserializeObject<UserProfile>(response.Content);
         }
 
-        // Get all accounts for a specific user
+        
         public async Task<List<Account>> GetAccountsByUserIdAsync(int userId)
         {
             var request = new RestRequest("api/accounts", Method.Get);
@@ -42,7 +42,7 @@ namespace BankWebAppMVC.Services
             return allAccounts?.Where(a => a.UserId == userId).ToList() ?? new List<Account>();
         }
 
-        // Get transactions for a specific account
+        
         public async Task<List<Transactions>> GetTransactionsByAccountAsync(int accountNumber)
         {
             var request = new RestRequest($"api/transactions/ByAccount/{accountNumber}", Method.Get);
@@ -59,7 +59,7 @@ namespace BankWebAppMVC.Services
         }
 
      
-        // Get user by Id
+       
         public async Task<UserProfile?> GetUserByIdAsync(int userId)
         {
             var request = new RestRequest($"api/userprofiles/{userId}", Method.Get);
@@ -69,7 +69,7 @@ namespace BankWebAppMVC.Services
             return JsonConvert.DeserializeObject<UserProfile>(response.Content);
         }
 
-        // Get all users (for admin)
+        
         public async Task<List<UserProfile>> GetAllUsersAsync()
         {
             var request = new RestRequest("api/userprofiles", Method.Get);
@@ -80,7 +80,7 @@ namespace BankWebAppMVC.Services
         }
 
 
-        // Transfer money between accounts
+      
         public async Task<bool> TransferMoneyAsync(int fromAccount, int toAccount, decimal amount, string description)
         {
             var withdraw = new Transactions
@@ -89,7 +89,7 @@ namespace BankWebAppMVC.Services
                 TransactionType = "Withdrawal",
                 Amount = amount,
                 Date = DateTime.Now,
-                UserId = fromAccount, // optional, or fetch UserId if needed
+                UserId = fromAccount, 
                 Description = description
             };
 
@@ -99,7 +99,7 @@ namespace BankWebAppMVC.Services
                 TransactionType = "Deposit",
                 Amount = amount,
                 Date = DateTime.Now,
-                UserId = toAccount, // optional
+                UserId = toAccount, 
                 Description = description
             };
 

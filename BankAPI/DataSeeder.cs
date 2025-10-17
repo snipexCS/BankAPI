@@ -38,7 +38,7 @@ public static class DataSeeder
                 Address = "Random Street",
                 Password = "pass123",
                 Picture = pictureFiles[userId - 1],
-                IsAdmin = (userId == 1) // first user is admin
+                IsAdmin = (userId == 1) 
             });
 
             accounts.Add(new Account

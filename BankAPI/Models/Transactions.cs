@@ -18,5 +18,5 @@ public class Transactions
 
     public int UserId { get; set; }
 
-    public string Description { get; set; } // <-- Add this
+    public string Description { get; set; } 
 }

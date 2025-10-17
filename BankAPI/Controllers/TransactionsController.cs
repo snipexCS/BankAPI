@@ -65,13 +65,12 @@ public class TransactionsController : ControllerBase
         var account = await _context.Accounts.FindAsync(transaction.AccountNumber);
         if (account == null) return BadRequest("Account does not exist.");
 
-        // Rollback previous transaction
+        
         if (existingTransaction.TransactionType == "Deposit")
             account.Balance -= existingTransaction.Amount;
         else if (existingTransaction.TransactionType == "Withdrawal")
             account.Balance += existingTransaction.Amount;
 
-        // Apply new transaction
         if (transaction.TransactionType == "Deposit")
             account.Balance += transaction.Amount;
         else if (transaction.TransactionType == "Withdrawal")
