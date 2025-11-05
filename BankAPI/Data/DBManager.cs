@@ -18,7 +18,7 @@ namespace BankAPI.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Configure foreign keys
+            
             modelBuilder.Entity<Account>()
                 .HasOne<UserProfile>()
                 .WithMany()
@@ -31,7 +31,7 @@ namespace BankAPI.Data
                 .HasForeignKey(t => t.AccountNumber)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Call DataSeeder here to populate initial data dynamically
+            
             DataSeeder.SeedRandomData(modelBuilder);
         }
     }

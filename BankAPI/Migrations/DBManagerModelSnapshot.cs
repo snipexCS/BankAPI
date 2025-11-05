@@ -74,74 +74,55 @@ namespace BankAPI.Migrations
                             AccountType = "Savings",
                             Balance = 10000m,
                             UserId = 5
-                        });
-                });
-
-            modelBuilder.Entity("BankAPI.Models.Transactions", b =>
-                {
-                    b.Property<int>("TransactionId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("AccountNumber")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("TransactionType")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("TransactionId");
-
-                    b.HasIndex("AccountNumber");
-
-                    b.ToTable("Transactions");
-
-                    b.HasData(
-                        new
-                        {
-                            TransactionId = 1,
-                            AccountNumber = 1001,
-                            Amount = 6000m,
-                            Date = new DateTime(2025, 9, 27, 16, 17, 28, 271, DateTimeKind.Local).AddTicks(5530),
-                            TransactionType = "Deposit"
                         },
                         new
                         {
-                            TransactionId = 2,
-                            AccountNumber = 1002,
-                            Amount = 7000m,
-                            Date = new DateTime(2025, 9, 27, 16, 17, 28, 271, DateTimeKind.Local).AddTicks(5557),
-                            TransactionType = "Deposit"
+                            AccountNumber = 1006,
+                            AccountType = "Savings",
+                            Balance = 11000m,
+                            UserId = 6
                         },
                         new
                         {
-                            TransactionId = 3,
-                            AccountNumber = 1003,
-                            Amount = 8000m,
-                            Date = new DateTime(2025, 9, 27, 16, 17, 28, 271, DateTimeKind.Local).AddTicks(5562),
-                            TransactionType = "Deposit"
+                            AccountNumber = 1007,
+                            AccountType = "Savings",
+                            Balance = 12000m,
+                            UserId = 7
                         },
                         new
                         {
-                            TransactionId = 4,
-                            AccountNumber = 1004,
-                            Amount = 9000m,
-                            Date = new DateTime(2025, 9, 27, 16, 17, 28, 271, DateTimeKind.Local).AddTicks(5566),
-                            TransactionType = "Deposit"
+                            AccountNumber = 1008,
+                            AccountType = "Savings",
+                            Balance = 13000m,
+                            UserId = 8
                         },
                         new
                         {
-                            TransactionId = 5,
-                            AccountNumber = 1005,
-                            Amount = 10000m,
-                            Date = new DateTime(2025, 9, 27, 16, 17, 28, 271, DateTimeKind.Local).AddTicks(5574),
-                            TransactionType = "Deposit"
+                            AccountNumber = 1009,
+                            AccountType = "Savings",
+                            Balance = 14000m,
+                            UserId = 9
+                        },
+                        new
+                        {
+                            AccountNumber = 1010,
+                            AccountType = "Savings",
+                            Balance = 15000m,
+                            UserId = 10
+                        },
+                        new
+                        {
+                            AccountNumber = 1011,
+                            AccountType = "Savings",
+                            Balance = 16000m,
+                            UserId = 11
+                        },
+                        new
+                        {
+                            AccountNumber = 1012,
+                            AccountType = "Savings",
+                            Balance = 17000m,
+                            UserId = 12
                         });
                 });
 
@@ -158,6 +139,9 @@ namespace BankAPI.Migrations
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -185,50 +169,287 @@ namespace BankAPI.Migrations
                             UserId = 1,
                             Address = "Random Street",
                             Email = "fangyuan@example.com",
+                            IsAdmin = true,
                             Name = "Fang Yuan",
                             Password = "pass123",
                             Phone = "0123456789",
-                            Picture = ""
+                            Picture = "user1.jpg"
                         },
                         new
                         {
                             UserId = 2,
                             Address = "Random Street",
                             Email = "redfog@example.com",
+                            IsAdmin = false,
                             Name = "Red Fog",
                             Password = "pass123",
                             Phone = "0123456789",
-                            Picture = ""
+                            Picture = "user2.jpg"
                         },
                         new
                         {
                             UserId = 3,
                             Address = "Random Street",
                             Email = "blackevil@example.com",
+                            IsAdmin = false,
                             Name = "Black Evil",
                             Password = "pass123",
                             Phone = "0123456789",
-                            Picture = ""
+                            Picture = "user3.jpg"
                         },
                         new
                         {
                             UserId = 4,
                             Address = "Random Street",
                             Email = "liuchen@example.com",
+                            IsAdmin = false,
                             Name = "Liu Chen",
                             Password = "pass123",
                             Phone = "0123456789",
-                            Picture = ""
+                            Picture = "user4.jpg"
                         },
                         new
                         {
                             UserId = 5,
                             Address = "Random Street",
                             Email = "shenwei@example.com",
+                            IsAdmin = false,
                             Name = "Shen Wei",
                             Password = "pass123",
                             Phone = "0123456789",
-                            Picture = ""
+                            Picture = "user5.jpg"
+                        },
+                        new
+                        {
+                            UserId = 6,
+                            Address = "Random Street",
+                            Email = "rengoku@example.com",
+                            IsAdmin = false,
+                            Name = "Rengoku",
+                            Password = "pass123",
+                            Phone = "0123456789",
+                            Picture = "user6.jpg"
+                        },
+                        new
+                        {
+                            UserId = 7,
+                            Address = "Random Street",
+                            Email = "wusheng@example.com",
+                            IsAdmin = false,
+                            Name = "Wu Sheng",
+                            Password = "pass123",
+                            Phone = "0123456789",
+                            Picture = "user7.jpg"
+                        },
+                        new
+                        {
+                            UserId = 8,
+                            Address = "Random Street",
+                            Email = "daoist@example.com",
+                            IsAdmin = false,
+                            Name = "Daoist",
+                            Password = "pass123",
+                            Phone = "0123456789",
+                            Picture = "user8.jpg"
+                        },
+                        new
+                        {
+                            UserId = 9,
+                            Address = "Random Street",
+                            Email = "masterchen@example.com",
+                            IsAdmin = false,
+                            Name = "Master Chen",
+                            Password = "pass123",
+                            Phone = "0123456789",
+                            Picture = "user9.jpg"
+                        },
+                        new
+                        {
+                            UserId = 10,
+                            Address = "Random Street",
+                            Email = "zhurong@example.com",
+                            IsAdmin = false,
+                            Name = "Zhu Rong",
+                            Password = "pass123",
+                            Phone = "0123456789",
+                            Picture = "user10.jpg"
+                        },
+                        new
+                        {
+                            UserId = 11,
+                            Address = "Random Street",
+                            Email = "limu@example.com",
+                            IsAdmin = false,
+                            Name = "Li Mu",
+                            Password = "pass123",
+                            Phone = "0123456789",
+                            Picture = "user11.jpg"
+                        },
+                        new
+                        {
+                            UserId = 12,
+                            Address = "Random Street",
+                            Email = "yanshi@example.com",
+                            IsAdmin = false,
+                            Name = "Yan Shi",
+                            Password = "pass123",
+                            Phone = "0123456789",
+                            Picture = "user12.jpg"
+                        });
+                });
+
+            modelBuilder.Entity("Transactions", b =>
+                {
+                    b.Property<int>("TransactionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("AccountNumber")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TransactionType")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("TransactionId");
+
+                    b.HasIndex("AccountNumber");
+
+                    b.ToTable("Transactions");
+
+                    b.HasData(
+                        new
+                        {
+                            TransactionId = 1,
+                            AccountNumber = 1001,
+                            Amount = 6000m,
+                            Date = new DateTime(2025, 10, 4, 16, 6, 2, 910, DateTimeKind.Local).AddTicks(6767),
+                            Description = "Initial deposit",
+                            TransactionType = "Deposit",
+                            UserId = 1
+                        },
+                        new
+                        {
+                            TransactionId = 2,
+                            AccountNumber = 1002,
+                            Amount = 7000m,
+                            Date = new DateTime(2025, 10, 4, 16, 6, 2, 910, DateTimeKind.Local).AddTicks(6785),
+                            Description = "Initial deposit",
+                            TransactionType = "Deposit",
+                            UserId = 2
+                        },
+                        new
+                        {
+                            TransactionId = 3,
+                            AccountNumber = 1003,
+                            Amount = 8000m,
+                            Date = new DateTime(2025, 10, 4, 16, 6, 2, 910, DateTimeKind.Local).AddTicks(6787),
+                            Description = "Initial deposit",
+                            TransactionType = "Deposit",
+                            UserId = 3
+                        },
+                        new
+                        {
+                            TransactionId = 4,
+                            AccountNumber = 1004,
+                            Amount = 9000m,
+                            Date = new DateTime(2025, 10, 4, 16, 6, 2, 910, DateTimeKind.Local).AddTicks(6789),
+                            Description = "Initial deposit",
+                            TransactionType = "Deposit",
+                            UserId = 4
+                        },
+                        new
+                        {
+                            TransactionId = 5,
+                            AccountNumber = 1005,
+                            Amount = 10000m,
+                            Date = new DateTime(2025, 10, 4, 16, 6, 2, 910, DateTimeKind.Local).AddTicks(6792),
+                            Description = "Initial deposit",
+                            TransactionType = "Deposit",
+                            UserId = 5
+                        },
+                        new
+                        {
+                            TransactionId = 6,
+                            AccountNumber = 1006,
+                            Amount = 11000m,
+                            Date = new DateTime(2025, 10, 4, 16, 6, 2, 910, DateTimeKind.Local).AddTicks(6794),
+                            Description = "Initial deposit",
+                            TransactionType = "Deposit",
+                            UserId = 6
+                        },
+                        new
+                        {
+                            TransactionId = 7,
+                            AccountNumber = 1007,
+                            Amount = 12000m,
+                            Date = new DateTime(2025, 10, 4, 16, 6, 2, 910, DateTimeKind.Local).AddTicks(6815),
+                            Description = "Initial deposit",
+                            TransactionType = "Deposit",
+                            UserId = 7
+                        },
+                        new
+                        {
+                            TransactionId = 8,
+                            AccountNumber = 1008,
+                            Amount = 13000m,
+                            Date = new DateTime(2025, 10, 4, 16, 6, 2, 910, DateTimeKind.Local).AddTicks(6818),
+                            Description = "Initial deposit",
+                            TransactionType = "Deposit",
+                            UserId = 8
+                        },
+                        new
+                        {
+                            TransactionId = 9,
+                            AccountNumber = 1009,
+                            Amount = 14000m,
+                            Date = new DateTime(2025, 10, 4, 16, 6, 2, 910, DateTimeKind.Local).AddTicks(6821),
+                            Description = "Initial deposit",
+                            TransactionType = "Deposit",
+                            UserId = 9
+                        },
+                        new
+                        {
+                            TransactionId = 10,
+                            AccountNumber = 1010,
+                            Amount = 15000m,
+                            Date = new DateTime(2025, 10, 4, 16, 6, 2, 910, DateTimeKind.Local).AddTicks(6822),
+                            Description = "Initial deposit",
+                            TransactionType = "Deposit",
+                            UserId = 10
+                        },
+                        new
+                        {
+                            TransactionId = 11,
+                            AccountNumber = 1011,
+                            Amount = 16000m,
+                            Date = new DateTime(2025, 10, 4, 16, 6, 2, 910, DateTimeKind.Local).AddTicks(6824),
+                            Description = "Initial deposit",
+                            TransactionType = "Deposit",
+                            UserId = 11
+                        },
+                        new
+                        {
+                            TransactionId = 12,
+                            AccountNumber = 1012,
+                            Amount = 17000m,
+                            Date = new DateTime(2025, 10, 4, 16, 6, 2, 910, DateTimeKind.Local).AddTicks(6825),
+                            Description = "Initial deposit",
+                            TransactionType = "Deposit",
+                            UserId = 12
                         });
                 });
 
@@ -241,7 +462,7 @@ namespace BankAPI.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BankAPI.Models.Transactions", b =>
+            modelBuilder.Entity("Transactions", b =>
                 {
                     b.HasOne("BankAPI.Models.Account", null)
                         .WithMany()
