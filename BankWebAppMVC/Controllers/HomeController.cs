@@ -58,7 +58,7 @@ namespace BankWebAppMVC.Controllers
                 transactions.AddRange(txns);
             }
 
-            // Filter by date
+            
             if (startDate.HasValue)
                 transactions = transactions.Where(t => t.Date.Date >= startDate.Value.Date).ToList();
             if (endDate.HasValue)

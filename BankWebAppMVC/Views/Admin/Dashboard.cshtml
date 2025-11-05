@@ -4,14 +4,14 @@ var accounts = ViewBag.Accounts as List<BankWebAppMVC.Models.Account> ?? new Lis
 var transactions = ViewBag.Transactions as List<BankWebAppMVC.Models.Transactions> ?? new List<BankWebAppMVC.Models.Transactions>();
 var admin = ViewBag.CurrentAdmin as BankWebAppMVC.Models.UserProfile;
 
-// Get query parameters
+
 var userSearch = ViewContext.HttpContext.Request.Query["userSearch"].ToString()?.ToLower();
 var txnSearch = ViewContext.HttpContext.Request.Query["txnSearch"].ToString()?.ToLower();
 var txnSort = ViewContext.HttpContext.Request.Query["txnSort"].ToString();
 }
 
 @{
-    // Filter users
+    
     if (!string.IsNullOrWhiteSpace(userSearch))
     {
         users = users.Where(u =>
@@ -21,7 +21,7 @@ var txnSort = ViewContext.HttpContext.Request.Query["txnSort"].ToString();
         ).ToList();
     }
 
-    // Filter transactions
+    
     if (!string.IsNullOrWhiteSpace(txnSearch))
     {
         transactions = transactions.Where(t =>
@@ -31,7 +31,6 @@ var txnSort = ViewContext.HttpContext.Request.Query["txnSort"].ToString();
         ).ToList();
     }
 
-    // Sort transactions
     transactions = txnSort switch
     {
         "DateAsc" => transactions.OrderBy(t => t.Date).ToList(),
@@ -44,7 +43,7 @@ var txnSort = ViewContext.HttpContext.Request.Query["txnSort"].ToString();
 
 <div class="container mt-4">
 
-    <!-- Admin Info -->
+   
     <div class="text-center mb-4">
         @if (admin != null)
         {
@@ -65,7 +64,7 @@ var txnSort = ViewContext.HttpContext.Request.Query["txnSort"].ToString();
 
     <hr />
 
-    <!-- Search / Filter Form -->
+    
     <form method="get" class="mb-3 row">
         <div class="col">
             <input type="text" name="userSearch"
@@ -90,10 +89,10 @@ var txnSort = ViewContext.HttpContext.Request.Query["txnSort"].ToString();
         </div>
     </form>
 
-    <!-- Create New User Button -->
+   
     <a asp-action="CreateUser" class="btn btn-success mb-2">Create New User</a>
 
-    <!-- Registered Users -->
+   
     <h3>Registered Users</h3>
     <table class="table table-striped table-bordered">
         <thead class="table-dark">
@@ -136,7 +135,7 @@ var txnSort = ViewContext.HttpContext.Request.Query["txnSort"].ToString();
         </tbody>
     </table>
 
-    <!-- Accounts -->
+   
     <h3>Accounts</h3>
     <table class="table table-bordered">
         <thead class="table-dark">
@@ -160,7 +159,7 @@ var txnSort = ViewContext.HttpContext.Request.Query["txnSort"].ToString();
         </tbody>
     </table>
 
-    <!-- Transactions -->
+   
     <h3>Recent Transactions</h3>
     <table class="table table-hover">
         <thead class="table-dark">

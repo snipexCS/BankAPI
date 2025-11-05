@@ -18,7 +18,7 @@ namespace BankAPI.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Configure foreign keys
+            
             modelBuilder.Entity<Account>()
                 .HasOne<UserProfile>()
                 .WithMany()

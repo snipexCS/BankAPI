@@ -14,7 +14,6 @@
         <strong>Phone:</strong> @Model.Phone
     </p>
 
-    <!-- Edit Profile Button -->
     <a asp-action="Edit" class="btn btn-primary mt-2">Edit Profile</a>
 </div>
 
@@ -42,7 +41,7 @@
 </table>
 
 <h4 class="mt-4">Transfer Money</h4>
-<form method="post" asp-action="Transfer">
+<form method="post" asp-action="Transfer" id="transferForm">
     <div class="row mb-3">
         <div class="col">
             <input type="number" name="fromAccount" class="form-control" placeholder="From Account" required />
@@ -78,7 +77,6 @@
     </div>
 </form>
 
-
 <table class="table table-bordered table-hover">
     <thead class="table-dark">
         <tr>
@@ -101,3 +99,34 @@
     </tbody>
 </table>
 
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const transferForm = document.getElementById("transferForm");
+
+            transferForm.addEventListener("submit", function (e) {
+                const from = transferForm.querySelector('input[name="fromAccount"]').value;
+                const to = transferForm.querySelector('input[name="toAccount"]').value;
+                const amount = transferForm.querySelector('input[name="amount"]').value;
+
+                if (from === to) {
+                    e.preventDefault();
+                    alert(" 'From Account' and 'To Account' cannot be the same.");
+                    return;
+                }
+
+                if (amount <= 0) {
+                    e.preventDefault();
+                    alert("Please enter a valid transfer amount.");
+                    return;
+                }
+
+                
+                const confirmTransfer = confirm(`Are you sure you want to transfer $${amount} from ${from} to ${to}?`);
+                if (!confirmTransfer) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+}
